@@ -80,24 +80,6 @@ export default function Home() {
     return false;
   };
 
-  // 编辑字段
-  const handleFieldEdit = (field: keyof WordData) => {
-    if (wordsData.length === 0) return;
-    
-    const currentValue = currentWord[field] as string;
-    const newValue = prompt(`编辑${getFieldLabel(field)}:`, currentValue);
-    
-    if (newValue !== null && newValue !== currentValue) {
-      setWordsData(prevWordsData => {
-        const updatedWords = [...prevWordsData];
-        updatedWords[currentIndex] = {
-          ...updatedWords[currentIndex],
-          [field]: newValue
-        };
-        return updatedWords;
-      });
-    }
-  };
 
   // 获取字段标签
   const getFieldLabel = (field: keyof WordData): string => {
@@ -373,43 +355,34 @@ export default function Home() {
             <tr>
               <td 
                 className="px-6 py-4 text-center border border-gray-300 text-3xl cursor-pointer hover:bg-gray-100 transition-colors"
-                onClick={() => handleFieldEdit('phonetic')}
-                title="点击编辑音标"
               >
-                {currentWord.phonetic || '点击添加音标'}
+                {currentWord.phonetic || '暂无音标'}
               </td>
             </tr>
             <tr>
               <td 
                 className="px-6 py-4 text-center border border-gray-300 text-3xl cursor-pointer hover:bg-gray-100 transition-colors"
-                onClick={() => handleFieldEdit('partOfSpeech')}
-                title="点击编辑词性"
               >
-                {currentWord.partOfSpeech || '点击添加词性'}
+                {currentWord.partOfSpeech || '暂无词性'}
               </td>
             </tr>
             <tr>
               <td 
-                className="px-6 py-4 text-center border border-gray-300 text-8xl font-semibold cursor-pointer hover:bg-gray-100 transition-colors"
-                onClick={() => handleFieldEdit('meaning')}
-                title="点击编辑含义"
+                className="px-6 py-4 text-center border border-gray-300 text-6xl font-semibold cursor-pointer hover:bg-gray-100 transition-colors"
               >
-                {currentWord.meaning || '点击添加含义'}
+                {currentWord.meaning || '暂无含义'}
               </td>
             </tr>
             <tr>
               <td 
                 className="px-6 py-4 text-center border border-gray-300 cursor-pointer text-3xl hover:bg-gray-100 transition-colors"
-                onClick={() => handleFieldEdit('mnemonic')}
-                title="点击编辑助记"
               >
-                {currentWord.mnemonic || '点击添加助记'}
+                {currentWord.mnemonic || '暂无助记'}
               </td>
             </tr>
             <tr>
               <td 
                 className="px-6 py-4 text-center border border-gray-300 cursor-pointer hover:bg-gray-100 transition-colors"
-                onClick={() => handleFieldEdit('association')}
               >
                 {currentWord.association ? (
                   <div className="mt-2 text-xl">
