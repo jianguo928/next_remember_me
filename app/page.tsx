@@ -2,6 +2,8 @@
 
 import { useState, useRef, useEffect } from 'react';
 
+// MARK: 收藏开始
+// MARK: 熟记开始
 interface WordData {
   word: string;
   phonetic: string;
@@ -9,10 +11,12 @@ interface WordData {
   meaning: string;
   mnemonic: string;
   isLearned: boolean;
-  isFavorited: boolean;
-  isMastered: boolean;
+  isFavorited: boolean; // MARK: 是否收藏
+  isMastered: boolean; // MARK: 是否熟记
   association?: string; // 新增联想字段
 }
+// MARK: 熟记结束
+// MARK: 收藏结束
 
 type ViewState = 'word' | 'details' | 'status';
 
@@ -21,7 +25,9 @@ export default function Home() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [viewState, setViewState] = useState<ViewState>('word');
   const [editingField, setEditingField] = useState<string | null>(null);
+  // MARK: 收藏开始
   const [learnFavorites, setLearnFavorites] = useState(false); // 控制是否学习收藏的单词
+  // MARK: 收藏结束
   const [studiedCount, setStudiedCount] = useState(0); // 记录学习过的单词数量（包括学会和没学会）
   const [audioEnabled, setAudioEnabled] = useState(true); // 音频播放总开关
   const [backupInterval, setBackupInterval] = useState(50); // 备份间隔（每学习多少个单词备份一次）
@@ -52,6 +58,8 @@ export default function Home() {
     });
   };
 
+  // MARK: 收藏开始
+  // MARK: 熟记开始
   const parseFileContent = (content: string): WordData[] => {
     const lines = content.trim().split('\n');
     return lines.map(line => {
@@ -63,14 +71,18 @@ export default function Home() {
         meaning: parts[3] || '',
         mnemonic: parts[4] || '',
         isLearned: parts[5] === '1',
-        isFavorited: parts[6] === '1',
-        isMastered: parts[7] === '1',
+        isFavorited: parts[6] === '1', // MARK: 第6位表示是否收藏
+        isMastered: parts[7] === '1', // MARK: 第7位表示是否熟记
         association: parts[8] || '' // 解析第9个字段作为联想
       };
     });
   };
+  // MARK: 收藏结束
+  // MARK: 熟记结束
 
-  // 判断单词是否应该在循环中显示
+  // MARK: 熟记开始
+  // MARK: 收藏开始
+  // 判断单词是否应该在循环中显示（收藏和熟记的核心业务逻辑）
   const shouldShowInLoop = (word: WordData): boolean => {
     // 如果熟记了，不显示
     if (word.isMastered) {
@@ -90,6 +102,8 @@ export default function Home() {
     // 其他情况不显示
     return false;
   };
+  // MARK: 收藏结束
+  // MARK: 熟记结束
 
   // 编辑字段
   const handleFieldEdit = (field: keyof WordData) => {
@@ -123,6 +137,8 @@ export default function Home() {
     return labels[field as keyof typeof labels] || field;
   };
 
+  // MARK: 收藏开始
+  // MARK: 熟记开始
   // 生成下载文件内容
   const generateFileContent = (): string => {
     return wordsData.map(word => {
@@ -136,12 +152,14 @@ export default function Home() {
         cleanField(word.meaning || ''),
         cleanField(word.mnemonic || ''),
         word.isLearned ? '1' : '0',
-        word.isFavorited ? '1' : '0',
-        word.isMastered ? '1' : '0',
+        word.isFavorited ? '1' : '0', // MARK: 第6位导出是否收藏
+        word.isMastered ? '1' : '0', // MARK: 第7位导出是否熟记
         cleanField(word.association || '') // 添加联想字段
       ].join('|');
     }).join('\n');
   };
+  // MARK: 收藏结束
+  // MARK: 熟记结束
 
   // 生成文件名
   const generateFileName = (): string => {
@@ -221,6 +239,7 @@ export default function Home() {
     }
   };
 
+  // MARK: 收藏开始
   // 切换收藏状态
   const toggleFavoriteStatus = () => {
     if (wordsData.length > 0) {
@@ -234,7 +253,9 @@ export default function Home() {
       });
     }
   };
+  // MARK: 收藏结束
 
+  // MARK: 熟记开始
   // 切换熟记状态
   const toggleMasteredStatus = () => {
     if (wordsData.length > 0) {
@@ -248,11 +269,14 @@ export default function Home() {
       });
     }
   };
+  // MARK: 熟记结束
 
+  // MARK: 收藏开始
   // 切换学习收藏状态
   const toggleLearnFavorites = () => {
     setLearnFavorites(!learnFavorites);
   };
+  // MARK: 收藏结束
 
   // 寻找下一个应该显示的单词索引
   const findNextDisplayableIndex = (startIndex: number): number => {
@@ -584,6 +608,7 @@ export default function Home() {
         </div>
         
         {/* 中间进度区域 */}
+        {/* MARK: 收藏开始 */}
         <div className="text-center text-3xl font-bold text-gray-700">
           {wordsData.length > 0 ? (
             <>
@@ -591,11 +616,13 @@ export default function Home() {
             </>
           ) : '0/0'}
         </div>
+        {/* MARK: 收藏结束 */}
         
         {/* 右侧按钮组 */}
         <div className="flex gap-2">
           {wordsData.length > 0 && currentWord && (
             <>
+              {/* MARK: 收藏开始 */}
               <button
                 onClick={toggleLearnFavorites}
                 className={`px-2 py-1 rounded text-3xl shadow transition-colors ${
@@ -616,6 +643,8 @@ export default function Home() {
               >
                 {currentWord.isFavorited ? '已收藏' : '未收藏'}
               </button>
+              {/* MARK: 收藏结束 */}
+              {/* MARK: 熟记开始 */}
               <button
                 onClick={toggleMasteredStatus}
                 className={`px-2 py-1 rounded text-3xl shadow transition-colors ${
@@ -626,6 +655,7 @@ export default function Home() {
               >
                 {currentWord.isMastered ? '已熟记' : '未熟记'}
               </button>
+              {/* MARK: 熟记结束 */}
             </>
           )}
         </div>
