@@ -239,44 +239,6 @@ export default function Home() {
     }
   };
 
-  // MARK: 收藏开始
-  // 切换收藏状态
-  const toggleFavoriteStatus = () => {
-    if (wordsData.length > 0) {
-      setWordsData(prevWordsData => {
-        const updatedWords = [...prevWordsData];
-        updatedWords[currentIndex] = {
-          ...updatedWords[currentIndex],
-          isFavorited: !updatedWords[currentIndex].isFavorited
-        };
-        return updatedWords;
-      });
-    }
-  };
-  // MARK: 收藏结束
-
-  // MARK: 熟记开始
-  // 切换熟记状态
-  const toggleMasteredStatus = () => {
-    if (wordsData.length > 0) {
-      setWordsData(prevWordsData => {
-        const updatedWords = [...prevWordsData];
-        updatedWords[currentIndex] = {
-          ...updatedWords[currentIndex],
-          isMastered: !updatedWords[currentIndex].isMastered
-        };
-        return updatedWords;
-      });
-    }
-  };
-  // MARK: 熟记结束
-
-  // MARK: 收藏开始
-  // 切换学习收藏状态
-  const toggleLearnFavorites = () => {
-    setLearnFavorites(!learnFavorites);
-  };
-  // MARK: 收藏结束
 
   // 寻找下一个应该显示的单词索引
   const findNextDisplayableIndex = (startIndex: number): number => {
@@ -622,40 +584,8 @@ export default function Home() {
         <div className="flex gap-2">
           {wordsData.length > 0 && currentWord && (
             <>
-              {/* MARK: 收藏开始 */}
-              <button
-                onClick={toggleLearnFavorites}
-                className={`px-2 py-1 rounded text-3xl shadow transition-colors ${
-                  learnFavorites
-                    ? 'bg-blue-500 hover:bg-blue-600 text-white'
-                    : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
-                }`}
-              >
-                {learnFavorites ? '学习收藏' : '不学收藏'}
-              </button>
-              <button
-                onClick={toggleFavoriteStatus}
-                className={`px-2 py-1 rounded text-3xl shadow transition-colors ${
-                  currentWord.isFavorited
-                    ? 'bg-yellow-500 hover:bg-yellow-600 text-white'
-                    : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
-                }`}
-              >
-                {currentWord.isFavorited ? '已收藏' : '未收藏'}
-              </button>
-              {/* MARK: 收藏结束 */}
-              {/* MARK: 熟记开始 */}
-              <button
-                onClick={toggleMasteredStatus}
-                className={`px-2 py-1 rounded text-3xl shadow transition-colors ${
-                  currentWord.isMastered
-                    ? 'bg-orange-500 hover:bg-orange-600 text-white'
-                    : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
-                }`}
-              >
-                {currentWord.isMastered ? '已熟记' : '未熟记'}
-              </button>
-              {/* MARK: 熟记结束 */}
+              {/* MARK: 原始收藏逻辑 */}
+              {/* MARK: 原始熟记逻辑 */}
             </>
           )}
         </div>
