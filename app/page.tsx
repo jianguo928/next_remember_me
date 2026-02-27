@@ -80,30 +80,15 @@ export default function Home() {
   // MARK: 收藏结束
   // MARK: 熟记结束
 
-  // MARK: 熟记开始
-  // MARK: 收藏开始
   // 判断单词是否应该在循环中显示（收藏和熟记的核心业务逻辑）
   const shouldShowInLoop = (word: WordData): boolean => {
-    // 如果熟记了，不显示
-    if (word.isMastered) {
-      return false;
-    }
-    
     // 未学会的单词总是要显示
     if (!word.isLearned) {
       return true;
     }
-    
-    // 已学会但收藏的单词，根据学习收藏设置决定是否显示
-    if (word.isFavorited && word.isLearned) {
-      return learnFavorites;
-    }
-    
     // 其他情况不显示
     return false;
   };
-  // MARK: 收藏结束
-  // MARK: 熟记结束
 
   // 编辑字段
   const handleFieldEdit = (field: keyof WordData) => {
@@ -570,15 +555,13 @@ export default function Home() {
         </div>
         
         {/* 中间进度区域 */}
-        {/* MARK: 收藏开始 */}
         <div className="text-center text-3xl font-bold text-gray-700">
           {wordsData.length > 0 ? (
             <>
-              {`${currentIndex + 1}/${wordsData.length} 错(${wordsData.slice(0, currentIndex + 1).filter(w => !w.isLearned).length}/${wordsData.filter(w => !w.isLearned).length}) 藏[${wordsData.slice(0, currentIndex + 1).filter(w => w.isFavorited).length}/${wordsData.filter(w => w.isFavorited).length}]`}
+              {`${currentIndex + 1}/${wordsData.length} 错(${wordsData.slice(0, currentIndex + 1).filter(w => !w.isLearned).length}/${wordsData.filter(w => !w.isLearned).length})`}
             </>
           ) : '0/0'}
         </div>
-        {/* MARK: 收藏结束 */}
         
         {/* 右侧按钮组 */}
         <div className="flex gap-2">
