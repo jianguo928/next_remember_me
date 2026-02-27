@@ -2,8 +2,6 @@
 
 import { useState, useRef, useEffect } from 'react';
 
-// MARK: 收藏开始
-// MARK: 熟记开始
 interface WordData {
   word: string;
   phonetic: string;
@@ -11,12 +9,10 @@ interface WordData {
   meaning: string;
   mnemonic: string;
   isLearned: boolean;
-  isFavorited: boolean; // MARK: 是否收藏
-  isMastered: boolean; // MARK: 是否熟记
   association?: string; // 新增联想字段
+  association2?: string; // 新增联想2字段
+  association3?: string; // 新增联想3字段
 }
-// MARK: 熟记结束
-// MARK: 收藏结束
 
 type ViewState = 'word' | 'details' | 'status';
 
@@ -24,10 +20,6 @@ export default function Home() {
   const [wordsData, setWordsData] = useState<WordData[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [viewState, setViewState] = useState<ViewState>('word');
-  const [editingField, setEditingField] = useState<string | null>(null);
-  // MARK: 收藏开始
-  const [learnFavorites, setLearnFavorites] = useState(false); // 控制是否学习收藏的单词
-  // MARK: 收藏结束
   const [studiedCount, setStudiedCount] = useState(0); // 记录学习过的单词数量（包括学会和没学会）
   const [audioEnabled, setAudioEnabled] = useState(true); // 音频播放总开关
   const [backupInterval, setBackupInterval] = useState(50); // 备份间隔（每学习多少个单词备份一次）
@@ -58,8 +50,7 @@ export default function Home() {
     });
   };
 
-  // MARK: 收藏开始
-  // MARK: 熟记开始
+
   const parseFileContent = (content: string): WordData[] => {
     const lines = content.trim().split('\n');
     return lines.map(line => {
@@ -71,14 +62,13 @@ export default function Home() {
         meaning: parts[3] || '',
         mnemonic: parts[4] || '',
         isLearned: parts[5] === '1',
-        isFavorited: parts[6] === '1', // MARK: 第6位表示是否收藏
-        isMastered: parts[7] === '1', // MARK: 第7位表示是否熟记
-        association: parts[8] || '' // 解析第9个字段作为联想
+        association: parts[6] || '', // 解析第6个字段作为联想
+        association2: parts[7] || '', // 解析第7个字段作为联想2
+        association3: parts[8] || '', // 解析第8个字段作为联想3
+
       };
     });
   };
-  // MARK: 收藏结束
-  // MARK: 熟记结束
 
   // 判断单词是否应该在循环中显示（收藏和熟记的核心业务逻辑）
   const shouldShowInLoop = (word: WordData): boolean => {
@@ -117,19 +107,18 @@ export default function Home() {
       partOfSpeech: '词性',
       meaning: '含义',
       mnemonic: '助记',
-      association: '联想'
+      association: '联想',
+      association2: '联想2',
+      association3: '联想3'
     };
     return labels[field as keyof typeof labels] || field;
   };
 
-  // MARK: 收藏开始
-  // MARK: 熟记开始
   // 生成下载文件内容
   const generateFileContent = (): string => {
     return wordsData.map(word => {
       // 清理字段中的换行符和回车符，避免导出时格式错乱
       const cleanField = (field: string) => field.replace(/[\r\n]/g, ' ').trim();
-      
       return [
         cleanField(word.word || ''),
         cleanField(word.phonetic || ''),
@@ -137,14 +126,13 @@ export default function Home() {
         cleanField(word.meaning || ''),
         cleanField(word.mnemonic || ''),
         word.isLearned ? '1' : '0',
-        word.isFavorited ? '1' : '0', // MARK: 第6位导出是否收藏
-        word.isMastered ? '1' : '0', // MARK: 第7位导出是否熟记
-        cleanField(word.association || '') // 添加联想字段
+        cleanField(word.association || ''), // 添加联想字段
+        cleanField(word.association2 || ''), // 添加联想字段
+        cleanField(word.association3 || '') // 添加联想字段
+
       ].join('|');
     }).join('\n');
   };
-  // MARK: 收藏结束
-  // MARK: 熟记结束
 
   // 生成文件名
   const generateFileName = (): string => {
@@ -422,7 +410,6 @@ export default function Home() {
               <td 
                 className="px-6 py-4 text-center border border-gray-300 cursor-pointer hover:bg-gray-100 transition-colors"
                 onClick={() => handleFieldEdit('association')}
-                title="点击编辑联想"
               >
                 {currentWord.association ? (
                   <div className="mt-2 text-xl">
@@ -431,7 +418,37 @@ export default function Home() {
                     ))}
                   </div>
                 ) : (
-                  <span className="text-gray-400">点击添加联想</span>
+                  <span className="text-gray-400">暂无联想</span>
+                )}
+              </td>
+            </tr>
+                        <tr>
+              <td 
+                className="px-6 py-4 text-center border border-gray-300 cursor-pointer hover:bg-gray-100 transition-colors"
+              >
+                {currentWord.association2 ? (
+                  <div className="mt-2 text-xl">
+                    {currentWord.association2.split(';').map((line, index) => (
+                      <div key={index}>{line}</div>
+                    ))}
+                  </div>
+                ) : (
+                  <span className="text-gray-400">暂无联想2</span>
+                )}
+              </td>
+            </tr>
+                        <tr>
+              <td 
+                className="px-6 py-4 text-center border border-gray-300 cursor-pointer hover:bg-gray-100 transition-colors"
+              >
+                {currentWord.association3 ? (
+                  <div className="mt-2 text-xl">
+                    {currentWord.association3.split(';').map((line, index) => (
+                      <div key={index}>{line}</div>
+                    ))}
+                  </div>
+                ) : (
+                  <span className="text-gray-400">暂无联想3</span>
                 )}
               </td>
             </tr>
@@ -567,8 +584,6 @@ export default function Home() {
         <div className="flex gap-2">
           {wordsData.length > 0 && currentWord && (
             <>
-              {/* MARK: 原始收藏逻辑 */}
-              {/* MARK: 原始熟记逻辑 */}
             </>
           )}
         </div>
