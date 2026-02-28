@@ -30,10 +30,10 @@ export default function Home() {
   const playAudio = (word: string) => {
     // 检查音频开关
     if (!audioEnabled) return;
-    
+
     // 检查 output2 文件夹中是否有对应的音频文件
     const audioPath = `/output2/${word}.mp3`;
-    
+
     // 停止当前播放的音频
     if (audioRef.current) {
       audioRef.current.pause();
@@ -125,10 +125,10 @@ export default function Home() {
     const hours = String(now.getHours()).padStart(2, '0');
     const minutes = String(now.getMinutes()).padStart(2, '0');
     const seconds = String(now.getSeconds()).padStart(2, '0');
-    
+
     const dateTime = `${year}${month}${day}_${hours}${minutes}${seconds}`;
     const currentWordIndex = currentIndex + 1;
-    
+
     return `words_${currentWordIndex}_${dateTime}.txt`;
   };
 
@@ -141,17 +141,17 @@ export default function Home() {
 
     const content = generateFileContent();
     const fileName = generateFileName();
-    
+
     const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
-    
+
     const link = document.createElement('a');
     link.href = url;
     link.download = fileName;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    
+
     URL.revokeObjectURL(url);
   };
 
@@ -163,14 +163,14 @@ export default function Home() {
     }
 
     const input = prompt(`请输入要跳转的单词索引 (1-${wordsData.length}):`);
-    
+
     if (input === null) {
       // 用户取消了输入
       return;
     }
 
     const targetIndex = parseInt(input.trim());
-    
+
     if (isNaN(targetIndex)) {
       alert('请输入有效的数字');
       return;
@@ -185,7 +185,7 @@ export default function Home() {
     const newIndex = targetIndex - 1;
     setCurrentIndex(newIndex);
     setViewState('word');
-    
+
     // 播放跳转后单词的音频
     if (wordsData[newIndex]) {
       setTimeout(() => {
@@ -233,7 +233,7 @@ export default function Home() {
         const targetIndex = firstDisplayableIndex >= 0 ? firstDisplayableIndex : 0;
         setCurrentIndex(targetIndex);
         setViewState('word');
-        
+
         // 播放第一个单词的音频
         if (parsed[targetIndex]) {
           setTimeout(() => {
@@ -262,12 +262,12 @@ export default function Home() {
         }
         return newCount;
       });
-      
+
       // 切换到下一个应该显示的单词
       const nextIndex = findNextDisplayableIndex(currentIndex);
       setCurrentIndex(nextIndex);
       setViewState('word');
-      
+
       // 只在进入第一阶段（显示单词）时播放音频
       if (wordsData[nextIndex]) {
         setTimeout(() => {
@@ -282,7 +282,7 @@ export default function Home() {
       setViewState('details');
     } else if (viewState === 'details') {
       setViewState('word');
-      
+
       // 从详情返回到单词视图时播放音频
       if (wordsData[currentIndex]) {
         setTimeout(() => {
@@ -353,72 +353,81 @@ export default function Home() {
         <table className="border-2 border-gray-300 bg-white rounded">
           <tbody>
             <tr>
-              <td 
+              <td
                 className="px-6 py-4 text-center border border-gray-300 text-3xl cursor-pointer hover:bg-gray-100 transition-colors"
               >
                 {currentWord.phonetic || '暂无音标'}
               </td>
             </tr>
             <tr>
-              <td 
+              <td
                 className="px-6 py-4 text-center border border-gray-300 text-3xl cursor-pointer hover:bg-gray-100 transition-colors"
               >
                 {currentWord.partOfSpeech || '暂无词性'}
               </td>
             </tr>
             <tr>
-              <td 
+              <td
                 className="px-6 py-4 text-center border border-gray-300 text-6xl font-semibold cursor-pointer hover:bg-gray-100 transition-colors"
               >
                 {currentWord.meaning || '暂无含义'}
               </td>
             </tr>
             <tr>
-              <td 
+              <td
                 className="px-6 py-4 text-center border border-gray-300 cursor-pointer text-3xl hover:bg-gray-100 transition-colors"
               >
                 {currentWord.mnemonic || '暂无助记'}
               </td>
             </tr>
             <tr>
-              <td 
+              <td
                 className="px-6 py-4 text-center border border-gray-300 cursor-pointer hover:bg-gray-100 transition-colors"
               >
                 {currentWord.association ? (
                   <div className="mt-2 text-xl">
-                    {currentWord.association.split(';').map((line, index) => (
-                      <div key={index}>{line}</div>
-                    ))}
+                    {currentWord.association.split('.').map((line, index) => {
+                      if (index === 0) {
+                        return <div key={index}>{line}.</div>;
+                      }
+                      return <div key={index}>{line}</div>;
+                    })}
                   </div>
                 ) : (
                   <span className="text-gray-400">暂无联想</span>
                 )}
               </td>
             </tr>
-                        <tr>
-              <td 
+            <tr>
+              <td
                 className="px-6 py-4 text-center border border-gray-300 cursor-pointer hover:bg-gray-100 transition-colors"
               >
                 {currentWord.association2 ? (
                   <div className="mt-2 text-xl">
-                    {currentWord.association2.split(';').map((line, index) => (
-                      <div key={index}>{line}</div>
-                    ))}
+                    {currentWord.association2.split('.').map((line, index) => {
+                      if (index === 0) {
+                        return <div key={index}>{line}.</div>;
+                      }
+                      return <div key={index}>{line}</div>;
+                    })}
                   </div>
                 ) : (
                   <span className="text-gray-400">暂无联想2</span>
                 )}
               </td>
             </tr>
-                        <tr>
-              <td 
+            <tr>
+              <td
                 className="px-6 py-4 text-center border border-gray-300 cursor-pointer hover:bg-gray-100 transition-colors"
               >
                 {currentWord.association3 ? (
                   <div className="mt-2 text-xl">
-                    {currentWord.association3.split(';').map((line, index) => (
-                      <div key={index}>{line}</div>
-                    ))}
+                    {currentWord.association3.split('.').map((line, index) => {
+                      if (index === 0) {
+                        return <div key={index}>{line}.</div>;
+                      }
+                      return <div key={index}>{line}</div>;
+                    })}
                   </div>
                 ) : (
                   <span className="text-gray-400">暂无联想3</span>
@@ -434,9 +443,8 @@ export default function Home() {
         <table className="border-2 border-gray-300 bg-white rounded">
           <tbody>
             <tr>
-              <td className={`px-20 py-16 text-center border border-gray-300 text-6xl font-bold ${
-                currentWord.isLearned ? 'text-green-600' : 'text-red-600'
-              }`}>
+              <td className={`px-20 py-16 text-center border border-gray-300 text-6xl font-bold ${currentWord.isLearned ? 'text-green-600' : 'text-red-600'
+                }`}>
                 {currentWord.isLearned ? '1' : '0'}
               </td>
             </tr>
@@ -514,16 +522,15 @@ export default function Home() {
           {/* 音频开关 */}
           <button
             onClick={() => setAudioEnabled(!audioEnabled)}
-            className={`px-2 py-1 rounded text-xl shadow transition-colors ${
-              audioEnabled
-                ? 'bg-green-500 hover:bg-green-600 text-white'
-                : 'bg-gray-400 hover:bg-gray-500 text-white'
-            }`}
+            className={`px-2 py-1 rounded text-xl shadow transition-colors ${audioEnabled
+              ? 'bg-green-500 hover:bg-green-600 text-white'
+              : 'bg-gray-400 hover:bg-gray-500 text-white'
+              }`}
             title="音频播放开关"
           >
             🔊{audioEnabled ? 'ON' : 'OFF'}
           </button>
-          
+
           {/* 备份间隔设置 */}
           <button
             onClick={() => {
@@ -543,7 +550,7 @@ export default function Home() {
             💾{backupInterval}
           </button>
         </div>
-        
+
         {/* 中间进度区域 */}
         <div className="text-center text-3xl font-bold text-gray-700">
           {wordsData.length > 0 ? (
@@ -552,7 +559,7 @@ export default function Home() {
             </>
           ) : '0/0'}
         </div>
-        
+
         {/* 右侧按钮组 */}
         <div className="flex gap-2">
           {wordsData.length > 0 && currentWord && (
@@ -561,7 +568,7 @@ export default function Home() {
           )}
         </div>
       </div>
-      
+
       {/* 表格区域 */}
       <div className="flex-1 flex items-center justify-center">
         {wordsData.length > 0 ? (
@@ -577,19 +584,19 @@ export default function Home() {
 
       {/* 右下角按钮组 */}
       <div className="fixed bottom-4 right-4 flex gap-2">
-        <button 
+        <button
           onClick={() => fileInputRef.current?.click()}
           className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm shadow transition-colors"
         >
           上传
         </button>
-        <button 
+        <button
           onClick={handleDownload}
           className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm shadow transition-colors"
         >
           下载
         </button>
-        <button 
+        <button
           onClick={handleJump}
           className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded text-sm shadow transition-colors"
         >
