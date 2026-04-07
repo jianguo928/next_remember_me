@@ -337,10 +337,10 @@ export default function Home() {
     if (viewState === 'word') {
       // 状态一：只显示单词
       return (
-        <table className="border-2 border-gray-300 bg-white rounded">
+        <table className="w-full max-w-[calc(100vw-2rem)] sm:max-w-3xl border-2 border-gray-300 bg-white rounded">
           <tbody>
             <tr>
-              <td className="px-20 py-16 text-center border border-gray-300 text-9xl font-bold">
+              <td className="w-full px-6 sm:px-20 py-10 text-center border border-gray-300 text-6xl sm:text-9xl font-bold break-words">
                 {currentWord.word}
               </td>
             </tr>
@@ -350,32 +350,32 @@ export default function Home() {
     } else if (viewState === 'details') {
       // 状态二：显示详细信息（可编辑的前四行）
       return (
-        <table className="border-2 border-gray-300 bg-white rounded">
+        <table className="w-full max-w-[calc(100vw-2rem)] sm:max-w-3xl border-2 border-gray-300 bg-white rounded">
           <tbody>
             <tr>
               <td
-                className="px-6 py-4 text-center border border-gray-300 text-3xl cursor-pointer hover:bg-gray-100 transition-colors"
+                className="px-4 sm:px-6 py-4 text-center border border-gray-300 text-xl sm:text-3xl cursor-pointer hover:bg-gray-100 transition-colors"
               >
                 {currentWord.phonetic || '暂无音标'}
               </td>
             </tr>
             <tr>
               <td
-                className="px-6 py-4 text-center border border-gray-300 text-3xl cursor-pointer hover:bg-gray-100 transition-colors"
+                className="px-4 sm:px-6 py-4 text-center border border-gray-300 text-xl sm:text-3xl cursor-pointer hover:bg-gray-100 transition-colors"
               >
                 {currentWord.partOfSpeech || '暂无词性'}
               </td>
             </tr>
             <tr>
               <td
-                className="px-6 py-4 text-center border border-gray-300 text-6xl font-semibold cursor-pointer hover:bg-gray-100 transition-colors"
+                className="px-4 sm:px-6 py-4 text-center border border-gray-300 text-3xl sm:text-6xl font-semibold cursor-pointer hover:bg-gray-100 transition-colors break-words"
               >
                 {currentWord.meaning || '暂无含义'}
               </td>
             </tr>
             <tr>
               <td
-                className="px-6 py-4 text-center border border-gray-300 cursor-pointer text-3xl hover:bg-gray-100 transition-colors"
+                className="px-4 sm:px-6 py-4 text-center border border-gray-300 cursor-pointer text-xl sm:text-3xl hover:bg-gray-100 transition-colors break-words"
               >
                 {currentWord.mnemonic || '暂无助记'}
               </td>
@@ -440,10 +440,10 @@ export default function Home() {
     } else {
       // 状态三：显示是否记住状态
       return (
-        <table className="border-2 border-gray-300 bg-white rounded">
+        <table className="w-full max-w-[calc(100vw-2rem)] sm:max-w-3xl border-2 border-gray-300 bg-white rounded">
           <tbody>
             <tr>
-              <td className={`px-20 py-16 text-center border border-gray-300 text-6xl font-bold ${currentWord.isLearned ? 'text-green-600' : 'text-red-600'
+              <td className={`w-full px-6 sm:px-20 py-10 text-center border border-gray-300 text-4xl sm:text-6xl font-bold ${currentWord.isLearned ? 'text-green-600' : 'text-red-600'
                 }`}>
                 {currentWord.isLearned ? '1' : '0'}
               </td>
@@ -570,7 +570,7 @@ export default function Home() {
       </div>
 
       {/* 表格区域 */}
-      <div className="flex-1 flex items-center justify-center">
+      <div className="flex-1 flex items-center justify-center px-4 sm:px-0">
         {wordsData.length > 0 ? (
           displayableCount > 0 ? (
             renderTable()
