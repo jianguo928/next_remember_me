@@ -469,21 +469,21 @@ export default function Home() {
       <div className="fixed left-4 top-1/2 transform -translate-y-1/2 flex flex-col gap-4">
         <button
           onClick={handleLeftArrow}
-          className="bg-gray-500 hover:bg-gray-600 text-white p-4 rounded-full shadow-lg transition-colors text-2xl"
+          className="bg-gray-500 hover:bg-gray-600 text-white p-4 rounded-full shadow-lg transition-colors text-2xl opacity-30"
           title="向前 (左键)"
         >
           ←
         </button>
         <button
           onClick={handleRightArrow}
-          className="bg-gray-500 hover:bg-gray-600 text-white p-4 rounded-full shadow-lg transition-colors text-2xl"
+          className="bg-gray-500 hover:bg-gray-600 text-white p-4 rounded-full shadow-lg transition-colors text-2xl opacity-30"
           title="向后 (右键)"
         >
           →
         </button>
         <button
           onClick={toggleLearnedStatus}
-          className="bg-purple-500 hover:bg-purple-600 text-white p-4 rounded-full shadow-lg transition-colors text-xl"
+          className="bg-purple-500 hover:bg-purple-600 text-white p-4 rounded-full shadow-lg transition-colors text-xl opacity-30"
           title="切换学会状态 (上下键)"
         >
           ↕
@@ -494,21 +494,21 @@ export default function Home() {
       <div className="fixed right-4 top-1/2 transform -translate-y-1/2 flex flex-col gap-4">
         <button
           onClick={handleLeftArrow}
-          className="bg-gray-500 hover:bg-gray-600 text-white p-4 rounded-full shadow-lg transition-colors text-2xl"
+          className="bg-gray-500 hover:bg-gray-600 text-white p-4 rounded-full shadow-lg transition-colors text-2xl opacity-30"
           title="向前 (左键)"
         >
           ←
         </button>
         <button
           onClick={handleRightArrow}
-          className="bg-gray-500 hover:bg-gray-600 text-white p-4 rounded-full shadow-lg transition-colors text-2xl"
+          className="bg-gray-500 hover:bg-gray-600 text-white p-4 rounded-full shadow-lg transition-colors text-2xl opacity-30"
           title="向后 (右键)"
         >
           →
         </button>
         <button
           onClick={toggleLearnedStatus}
-          className="bg-purple-500 hover:bg-purple-600 text-white p-4 rounded-full shadow-lg transition-colors text-xl"
+          className="bg-purple-500 hover:bg-purple-600 text-white p-4 rounded-full shadow-lg transition-colors text-xl opacity-30"
           title="切换学会状态 (上下键)"
         >
           ↕
