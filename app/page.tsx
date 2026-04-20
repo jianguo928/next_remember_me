@@ -23,6 +23,7 @@ export default function Home() {
   const [studiedCount, setStudiedCount] = useState(0); // 记录学习过的单词数量（包括学会和没学会）
   const [audioEnabled, setAudioEnabled] = useState(true); // 音频播放总开关
   const [backupInterval, setBackupInterval] = useState(50); // 备份间隔（每学习多少个单词备份一次）
+  const [reverseMode, setReverseMode] = useState(false); // 反转模式：先显示释义再显示单词
   const fileInputRef = useRef<HTMLInputElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -186,8 +187,8 @@ export default function Home() {
     setCurrentIndex(newIndex);
     setViewState('word');
 
-    // 播放跳转后单词的音频
-    if (wordsData[newIndex]) {
+    // 反转模式下先显示释义，不播音频；正常模式下显示单词，播放音频
+    if (!reverseMode && wordsData[newIndex]) {
       setTimeout(() => {
         playAudio(wordsData[newIndex].word);
       }, 100);
@@ -234,8 +235,8 @@ export default function Home() {
         setCurrentIndex(targetIndex);
         setViewState('word');
 
-        // 播放第一个单词的音频
-        if (parsed[targetIndex]) {
+        // 反转模式下先显示释义，不播音频；正常模式下显示单词，播放音频
+        if (!reverseMode && parsed[targetIndex]) {
           setTimeout(() => {
             playAudio(parsed[targetIndex].word);
           }, 100);
@@ -248,6 +249,10 @@ export default function Home() {
   const handleRightArrow = () => {
     if (viewState === 'word') {
       setViewState('details');
+      // 反转模式下 details 才是显示单词的阶段，此时播放音频
+      if (reverseMode && wordsData[currentIndex]) {
+        setTimeout(() => playAudio(wordsData[currentIndex].word), 100);
+      }
     } else if (viewState === 'details') {
       setViewState('status');
     } else if (viewState === 'status') {
@@ -268,8 +273,8 @@ export default function Home() {
       setCurrentIndex(nextIndex);
       setViewState('word');
 
-      // 只在进入第一阶段（显示单词）时播放音频
-      if (wordsData[nextIndex]) {
+      // 正常模式：进入 word（显示单词）时播放；反转模式：进入 word（显示释义）时不播
+      if (!reverseMode && wordsData[nextIndex]) {
         setTimeout(() => {
           playAudio(wordsData[nextIndex].word);
         }, 100);
@@ -283,8 +288,8 @@ export default function Home() {
     } else if (viewState === 'details') {
       setViewState('word');
 
-      // 从详情返回到单词视图时播放音频
-      if (wordsData[currentIndex]) {
+      // 正常模式返回 word（显示单词）时播放；反转模式返回 word（显示释义）时不播
+      if (!reverseMode && wordsData[currentIndex]) {
         setTimeout(() => {
           playAudio(wordsData[currentIndex].word);
         }, 100);
@@ -334,7 +339,12 @@ export default function Home() {
   const renderTable = () => {
     if (!currentWord) return null;
 
-    if (viewState === 'word') {
+    // 反转模式下交换 word 和 details 的渲染
+    const effectiveViewState = reverseMode && (viewState === 'word' || viewState === 'details')
+      ? (viewState === 'word' ? 'details' : 'word')
+      : viewState;
+
+    if (effectiveViewState === 'word') {
       // 状态一：只显示单词
       return (
         <table className="w-full max-w-[calc(100vw-2rem)] sm:max-w-3xl border-2 border-gray-300 bg-white rounded">
@@ -347,7 +357,7 @@ export default function Home() {
           </tbody>
         </table>
       );
-    } else if (viewState === 'details') {
+    } else if (effectiveViewState === 'details') {
       // 状态二：显示详细信息（可编辑的前四行）
       return (
         <table className="w-full max-w-[calc(100vw-2rem)] sm:max-w-3xl border-2 border-gray-300 bg-white rounded">
@@ -529,6 +539,18 @@ export default function Home() {
             title="音频播放开关"
           >
             🔊{audioEnabled ? 'ON' : 'OFF'}
+          </button>
+
+          {/* 反转模式开关 */}
+          <button
+            onClick={() => setReverseMode(!reverseMode)}
+            className={`px-2 py-1 rounded text-xl shadow transition-colors ${reverseMode
+              ? 'bg-orange-500 hover:bg-orange-600 text-white'
+              : 'bg-gray-400 hover:bg-gray-500 text-white'
+              }`}
+            title="反转模式：先显示释义再显示单词"
+          >
+            🔄{reverseMode ? 'ON' : 'OFF'}
           </button>
 
           {/* 备份间隔设置 */}
