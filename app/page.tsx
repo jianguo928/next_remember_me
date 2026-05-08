@@ -26,31 +26,43 @@ export default function Home() {
   const [reverseMode, setReverseMode] = useState(false); // 反转模式：先显示释义再显示单词
   const fileInputRef = useRef<HTMLInputElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const playAudioTaskRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const audioEnabledRef = useRef(audioEnabled);
+  audioEnabledRef.current = audioEnabled;
+  const viewStateRef = useRef<ViewState>(viewState);
+  const currentIndexRef = useRef(currentIndex);
+  viewStateRef.current = viewState;
+  currentIndexRef.current = currentIndex;
 
-  // 播放音频函数
+  // 播放到下一 macrotask，与翻页/快捷键解耦；连按只保留最后一次
   const playAudio = (word: string) => {
-    // 检查音频开关
-    if (!audioEnabled) return;
-
-    // 检查 output2 文件夹中是否有对应的音频文件
-    const audioPath = `/output2/${word}.mp3`;
-
-    // 停止当前播放的音频
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
+    if (playAudioTaskRef.current !== null) {
+      clearTimeout(playAudioTaskRef.current);
     }
+    playAudioTaskRef.current = setTimeout(() => {
+      playAudioTaskRef.current = null;
+      if (!audioEnabledRef.current) return;
 
-    // 创建新的音频对象
-    const audio = new Audio(audioPath);
-    audioRef.current = audio;
-
-    // 播放音频，如果文件不存在会静默失败
-    audio.play().catch(() => {
-      // 音频文件不存在或播放失败，静默处理
-    });
+      const audioPath = `/output2/${word}.mp3`;
+      let audio = audioRef.current;
+      if (!audio) {
+        audio = new Audio();
+        audio.preload = 'auto';
+        audioRef.current = audio;
+      }
+      audio.pause();
+      audio.src = audioPath;
+      void audio.play().catch(() => {});
+    }, 0);
   };
 
+  useEffect(() => {
+    return () => {
+      if (playAudioTaskRef.current !== null) {
+        clearTimeout(playAudioTaskRef.current);
+      }
+    };
+  }, []);
 
   const parseFileContent = (content: string): WordData[] => {
     const lines = content.trim().split('\n');
@@ -184,14 +196,14 @@ export default function Home() {
 
     // 跳转到指定索引（转换为0基础索引）
     const newIndex = targetIndex - 1;
+    currentIndexRef.current = newIndex;
+    viewStateRef.current = 'word';
     setCurrentIndex(newIndex);
     setViewState('word');
 
     // 反转模式下先显示释义，不播音频；正常模式下显示单词，播放音频
     if (!reverseMode && wordsData[newIndex]) {
-      setTimeout(() => {
-        playAudio(wordsData[newIndex].word);
-      }, 100);
+      playAudio(wordsData[newIndex].word);
     }
   };
 
@@ -232,14 +244,14 @@ export default function Home() {
         // 找到第一个应该显示的单词
         const firstDisplayableIndex = parsed.findIndex(word => shouldShowInLoop(word));
         const targetIndex = firstDisplayableIndex >= 0 ? firstDisplayableIndex : 0;
+        currentIndexRef.current = targetIndex;
+        viewStateRef.current = 'word';
         setCurrentIndex(targetIndex);
         setViewState('word');
 
         // 反转模式下先显示释义，不播音频；正常模式下显示单词，播放音频
         if (!reverseMode && parsed[targetIndex]) {
-          setTimeout(() => {
-            playAudio(parsed[targetIndex].word);
-          }, 100);
+          playAudio(parsed[targetIndex].word);
         }
       };
       reader.readAsText(file);
@@ -247,15 +259,19 @@ export default function Home() {
   };
 
   const handleRightArrow = () => {
-    if (viewState === 'word') {
+    const vs = viewStateRef.current;
+    if (vs === 'word') {
+      viewStateRef.current = 'details';
       setViewState('details');
       // 反转模式下 details 才是显示单词的阶段，此时播放音频
-      if (reverseMode && wordsData[currentIndex]) {
-        setTimeout(() => playAudio(wordsData[currentIndex].word), 100);
+      const idx = currentIndexRef.current;
+      if (reverseMode && wordsData[idx]) {
+        playAudio(wordsData[idx].word);
       }
-    } else if (viewState === 'details') {
+    } else if (vs === 'details') {
+      viewStateRef.current = 'status';
       setViewState('status');
-    } else if (viewState === 'status') {
+    } else if (vs === 'status') {
       // 学习了一个单词，增加计数
       setStudiedCount(prev => {
         const newCount = prev + 1;
@@ -269,50 +285,55 @@ export default function Home() {
       });
 
       // 切换到下一个应该显示的单词
-      const nextIndex = findNextDisplayableIndex(currentIndex);
+      const nextIndex = findNextDisplayableIndex(currentIndexRef.current);
+      currentIndexRef.current = nextIndex;
+      viewStateRef.current = 'word';
       setCurrentIndex(nextIndex);
       setViewState('word');
 
       // 正常模式：进入 word（显示单词）时播放；反转模式：进入 word（显示释义）时不播
       if (!reverseMode && wordsData[nextIndex]) {
-        setTimeout(() => {
-          playAudio(wordsData[nextIndex].word);
-        }, 100);
+        playAudio(wordsData[nextIndex].word);
       }
     }
   };
 
   const handleLeftArrow = () => {
-    if (viewState === 'status') {
+    const vs = viewStateRef.current;
+    if (vs === 'status') {
+      viewStateRef.current = 'details';
       setViewState('details');
-    } else if (viewState === 'details') {
+    } else if (vs === 'details') {
+      viewStateRef.current = 'word';
       setViewState('word');
 
       // 正常模式返回 word（显示单词）时播放；反转模式返回 word（显示释义）时不播
-      if (!reverseMode && wordsData[currentIndex]) {
-        setTimeout(() => {
-          playAudio(wordsData[currentIndex].word);
-        }, 100);
+      const idx = currentIndexRef.current;
+      if (!reverseMode && wordsData[idx]) {
+        playAudio(wordsData[idx].word);
       }
-    } else if (viewState === 'word') {
+    } else if (vs === 'word') {
       // 切换到上一个应该显示的单词的状态三
-      const prevIndex = findPrevDisplayableIndex(currentIndex);
+      const prevIndex = findPrevDisplayableIndex(currentIndexRef.current);
+      currentIndexRef.current = prevIndex;
+      viewStateRef.current = 'status';
       setCurrentIndex(prevIndex);
       setViewState('status');
     }
   };
 
   const toggleLearnedStatus = () => {
-    if (viewState === 'status' && wordsData.length > 0) {
-      setWordsData(prevWordsData => {
-        const updatedWords = [...prevWordsData];
-        updatedWords[currentIndex] = {
-          ...updatedWords[currentIndex],
-          isLearned: !updatedWords[currentIndex].isLearned
-        };
-        return updatedWords;
-      });
-    }
+    if (viewStateRef.current !== 'status' || wordsData.length === 0) return;
+    const idx = currentIndexRef.current;
+    setWordsData(prevWordsData => {
+      if (idx < 0 || idx >= prevWordsData.length) return prevWordsData;
+      const updatedWords = [...prevWordsData];
+      updatedWords[idx] = {
+        ...updatedWords[idx],
+        isLearned: !updatedWords[idx].isLearned
+      };
+      return updatedWords;
+    });
   };
 
   useEffect(() => {
