@@ -24,6 +24,7 @@ export default function Home() {
   const [audioEnabled, setAudioEnabled] = useState(true); // 音频播放总开关
   const [backupInterval, setBackupInterval] = useState(50); // 备份间隔（每学习多少个单词备份一次）
   const [reverseMode, setReverseMode] = useState(false); // 反转模式：先显示释义再显示单词
+  const [lastCommitHint, setLastCommitHint] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const playAudioTaskRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -61,6 +62,19 @@ export default function Home() {
       if (playAudioTaskRef.current !== null) {
         clearTimeout(playAudioTaskRef.current);
       }
+    };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/version')
+      .then((r) => r.json())
+      .then((d: { commitTime: string | null }) => {
+        if (!cancelled && d.commitTime) setLastCommitHint(d.commitTime);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
     };
   }, []);
 
@@ -653,6 +667,15 @@ export default function Home() {
           跳转
         </button>
       </div>
+
+      {lastCommitHint ? (
+        <div
+          className="fixed bottom-1 left-1 z-0 max-w-[min(100vw-1rem,20rem)] truncate text-[10px] leading-tight text-gray-400 opacity-60 pointer-events-none select-none"
+          title={`当前版本最后提交：${lastCommitHint}`}
+        >
+          {lastCommitHint}
+        </div>
+      ) : null}
     </div>
   );
 }
