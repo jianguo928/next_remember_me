@@ -26,6 +26,10 @@ export default function Home() {
   const [reverseMode, setReverseMode] = useState(false); // 反转模式：先显示释义再显示单词
   const fileInputRef = useRef<HTMLInputElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const viewStateRef = useRef<ViewState>(viewState);
+  const currentIndexRef = useRef(currentIndex);
+  viewStateRef.current = viewState;
+  currentIndexRef.current = currentIndex;
 
   // 播放音频函数
   const playAudio = (word: string) => {
@@ -247,15 +251,19 @@ export default function Home() {
   };
 
   const handleRightArrow = () => {
-    if (viewState === 'word') {
+    const vs = viewStateRef.current;
+    if (vs === 'word') {
+      viewStateRef.current = 'details';
       setViewState('details');
       // 反转模式下 details 才是显示单词的阶段，此时播放音频
-      if (reverseMode && wordsData[currentIndex]) {
-        setTimeout(() => playAudio(wordsData[currentIndex].word), 100);
+      const idx = currentIndexRef.current;
+      if (reverseMode && wordsData[idx]) {
+        setTimeout(() => playAudio(wordsData[idx].word), 100);
       }
-    } else if (viewState === 'details') {
+    } else if (vs === 'details') {
+      viewStateRef.current = 'status';
       setViewState('status');
-    } else if (viewState === 'status') {
+    } else if (vs === 'status') {
       // 学习了一个单词，增加计数
       setStudiedCount(prev => {
         const newCount = prev + 1;
@@ -269,7 +277,9 @@ export default function Home() {
       });
 
       // 切换到下一个应该显示的单词
-      const nextIndex = findNextDisplayableIndex(currentIndex);
+      const nextIndex = findNextDisplayableIndex(currentIndexRef.current);
+      currentIndexRef.current = nextIndex;
+      viewStateRef.current = 'word';
       setCurrentIndex(nextIndex);
       setViewState('word');
 
@@ -283,20 +293,26 @@ export default function Home() {
   };
 
   const handleLeftArrow = () => {
-    if (viewState === 'status') {
+    const vs = viewStateRef.current;
+    if (vs === 'status') {
+      viewStateRef.current = 'details';
       setViewState('details');
-    } else if (viewState === 'details') {
+    } else if (vs === 'details') {
+      viewStateRef.current = 'word';
       setViewState('word');
 
       // 正常模式返回 word（显示单词）时播放；反转模式返回 word（显示释义）时不播
-      if (!reverseMode && wordsData[currentIndex]) {
+      const idx = currentIndexRef.current;
+      if (!reverseMode && wordsData[idx]) {
         setTimeout(() => {
-          playAudio(wordsData[currentIndex].word);
+          playAudio(wordsData[idx].word);
         }, 100);
       }
-    } else if (viewState === 'word') {
+    } else if (vs === 'word') {
       // 切换到上一个应该显示的单词的状态三
-      const prevIndex = findPrevDisplayableIndex(currentIndex);
+      const prevIndex = findPrevDisplayableIndex(currentIndexRef.current);
+      currentIndexRef.current = prevIndex;
+      viewStateRef.current = 'status';
       setCurrentIndex(prevIndex);
       setViewState('status');
     }
