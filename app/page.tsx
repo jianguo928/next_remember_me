@@ -317,11 +317,18 @@ export default function Home() {
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
-      if (event.key === 'ArrowRight') {
+      const key = event.key.toLowerCase();
+
+      if (event.key === 'ArrowRight' || key === 'd') {
         handleRightArrow();
-      } else if (event.key === 'ArrowLeft') {
+      } else if (event.key === 'ArrowLeft' || key === 'a') {
         handleLeftArrow();
-      } else if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+      } else if (
+        event.key === 'ArrowUp' ||
+        event.key === 'ArrowDown' ||
+        key === 'w' ||
+        key === 's'
+      ) {
         // 在status状态下，上下键切换学习状态
         toggleLearnedStatus();
       }
@@ -480,21 +487,21 @@ export default function Home() {
         <button
           onClick={handleLeftArrow}
           className="bg-gray-500 hover:bg-gray-600 text-white p-4 rounded-full shadow-lg transition-colors text-2xl opacity-30"
-          title="向前 (左键)"
+          title="向前 (左键/A)"
         >
           ←
         </button>
         <button
           onClick={handleRightArrow}
           className="bg-gray-500 hover:bg-gray-600 text-white p-4 rounded-full shadow-lg transition-colors text-2xl opacity-30"
-          title="向后 (右键)"
+          title="向后 (右键/D)"
         >
           →
         </button>
         <button
           onClick={toggleLearnedStatus}
           className="bg-purple-500 hover:bg-purple-600 text-white p-4 rounded-full shadow-lg transition-colors text-xl opacity-30"
-          title="切换学会状态 (上下键)"
+          title="切换学会状态 (上下键/W/S)"
         >
           ↕
         </button>
@@ -505,21 +512,21 @@ export default function Home() {
         <button
           onClick={handleLeftArrow}
           className="bg-gray-500 hover:bg-gray-600 text-white p-4 rounded-full shadow-lg transition-colors text-2xl opacity-30"
-          title="向前 (左键)"
+          title="向前 (左键/A)"
         >
           ←
         </button>
         <button
           onClick={handleRightArrow}
           className="bg-gray-500 hover:bg-gray-600 text-white p-4 rounded-full shadow-lg transition-colors text-2xl opacity-30"
-          title="向后 (右键)"
+          title="向后 (右键/D)"
         >
           →
         </button>
         <button
           onClick={toggleLearnedStatus}
           className="bg-purple-500 hover:bg-purple-600 text-white p-4 rounded-full shadow-lg transition-colors text-xl opacity-30"
-          title="切换学会状态 (上下键)"
+          title="切换学会状态 (上下键/W/S)"
         >
           ↕
         </button>
