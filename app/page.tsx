@@ -16,6 +16,22 @@ interface WordData {
 
 type ViewState = 'word' | 'details' | 'status';
 
+type CountdownStatus = 'idle' | 'running' | 'paused';
+
+const COUNTDOWN_MAX_SEC = 99 * 3600 + 59 * 60 + 59;
+
+function clampCountdownSec(n: number): number {
+  return Math.max(0, Math.min(COUNTDOWN_MAX_SEC, Math.floor(n)));
+}
+
+function formatCountdownHMS(totalSec: number): string {
+  const s = clampCountdownSec(totalSec);
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+}
+
 export default function Home() {
   const [wordsData, setWordsData] = useState<WordData[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -25,6 +41,9 @@ export default function Home() {
   const [backupInterval, setBackupInterval] = useState(50); // 备份间隔（每学习多少个单词备份一次）
   const [reverseMode, setReverseMode] = useState(false); // 反转模式：先显示释义再显示单词
   const [lastCommitHint, setLastCommitHint] = useState<string | null>(null);
+  const [countdownPresetSec, setCountdownPresetSec] = useState(0);
+  const [countdownRemainSec, setCountdownRemainSec] = useState(0);
+  const [countdownStatus, setCountdownStatus] = useState<CountdownStatus>('idle');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const playAudioTaskRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -64,6 +83,20 @@ export default function Home() {
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (countdownStatus !== 'running') return;
+    const id = setInterval(() => {
+      setCountdownRemainSec((r) => {
+        if (r <= 1) {
+          setCountdownStatus('idle');
+          return 0;
+        }
+        return r - 1;
+      });
+    }, 1000);
+    return () => clearInterval(id);
+  }, [countdownStatus]);
 
   useEffect(() => {
     let cancelled = false;
@@ -221,6 +254,34 @@ export default function Home() {
     }
   };
 
+  const adjustCountdown = (deltaSec: number) => {
+    if (countdownStatus === 'running') return;
+    if (countdownStatus === 'idle') {
+      setCountdownRemainSec((r) => {
+        const next = clampCountdownSec(r + deltaSec);
+        setCountdownPresetSec(next);
+        return next;
+      });
+    } else {
+      setCountdownRemainSec((r) => clampCountdownSec(r + deltaSec));
+    }
+  };
+
+  const startCountdown = () => {
+    if (countdownStatus === 'running') return;
+    if (countdownRemainSec <= 0) return;
+    setCountdownStatus('running');
+  };
+
+  const pauseCountdown = () => {
+    if (countdownStatus !== 'running') return;
+    setCountdownStatus('paused');
+  };
+
+  const stopCountdown = () => {
+    setCountdownStatus('idle');
+    setCountdownRemainSec(countdownPresetSec);
+  };
 
   // 寻找下一个应该显示的单词索引
   const findNextDisplayableIndex = (startIndex: number): number => {
@@ -628,6 +689,81 @@ export default function Home() {
 
         {/* 右侧占位（与原版一致，便于中间进度在宽屏上分布；小屏隐藏） */}
         <div className="hidden gap-2 sm:order-3 sm:flex" aria-hidden />
+      </div>
+
+      {/* 倒计时：显示含秒；仅可调时/分 + 开始/暂停/停止 */}
+      <div className="border-b border-gray-100 px-2 pb-2 sm:px-4">
+        <div className="mx-auto flex max-w-4xl flex-col gap-2">
+          {/* 第一行：倒计时文字 + 时间 */}
+          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
+            <span className="text-xs text-gray-500 sm:text-sm">倒计时</span>
+            <span
+              className="font-mono text-xl font-bold tabular-nums tracking-tight text-gray-800 sm:text-2xl"
+              aria-live="polite"
+            >
+              {formatCountdownHMS(countdownRemainSec)}
+            </span>
+          </div>
+          {/* 第二行：开始 / 暂停 / 停止 */}
+          <div className="flex flex-wrap justify-center gap-1">
+            <button
+              type="button"
+              onClick={startCountdown}
+              disabled={countdownRemainSec <= 0 || countdownStatus === 'running'}
+              className="rounded bg-emerald-500 px-2 py-0.5 text-xs font-medium text-white shadow hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-40 sm:py-1 sm:text-sm"
+            >
+              开始
+            </button>
+            <button
+              type="button"
+              onClick={pauseCountdown}
+              disabled={countdownStatus !== 'running'}
+              className="rounded bg-amber-500 px-2 py-0.5 text-xs font-medium text-white shadow hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-40 sm:py-1 sm:text-sm"
+            >
+              暂停
+            </button>
+            <button
+              type="button"
+              onClick={stopCountdown}
+              disabled={
+                countdownStatus === 'idle' && countdownRemainSec === countdownPresetSec
+              }
+              className="rounded bg-slate-500 px-2 py-0.5 text-xs font-medium text-white shadow hover:bg-slate-600 disabled:cursor-not-allowed disabled:opacity-40 sm:py-1 sm:text-sm"
+            >
+              停止
+            </button>
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-1 text-xs sm:gap-x-16 sm:text-sm">
+            {(
+              [
+                { label: '时', deltaNeg: -3600, deltaPos: 3600 },
+                { label: '分', deltaNeg: -60, deltaPos: 60 },
+              ] as const
+            ).map(({ label, deltaNeg, deltaPos }) => (
+              <div key={label} className="flex items-center gap-0.5 sm:gap-1">
+                <span className="w-4 shrink-0 text-center text-gray-600 sm:w-5">{label}</span>
+                <button
+                  type="button"
+                  onClick={() => adjustCountdown(deltaNeg)}
+                  disabled={countdownStatus === 'running'}
+                  className="min-w-[1.75rem] rounded bg-gray-200 px-1 py-0.5 font-medium text-gray-800 hover:bg-gray-300 disabled:cursor-not-allowed disabled:opacity-40 sm:min-w-[2rem] sm:px-2"
+                  aria-label={`${label}减`}
+                >
+                  −
+                </button>
+                <button
+                  type="button"
+                  onClick={() => adjustCountdown(deltaPos)}
+                  disabled={countdownStatus === 'running'}
+                  className="min-w-[1.75rem] rounded bg-gray-200 px-1 py-0.5 font-medium text-gray-800 hover:bg-gray-300 disabled:cursor-not-allowed disabled:opacity-40 sm:min-w-[2rem] sm:px-2"
+                  aria-label={`${label}加`}
+                >
+                  +
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* 表格区域 */}
