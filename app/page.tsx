@@ -567,14 +567,14 @@ export default function Home() {
         </button>
       </div>
 
-      {/* 顶部区域 - 进度和按钮 */}
-      <div className="flex justify-between items-center pt-2 px-4">
-        {/* 左侧按钮组 */}
-        <div className="flex gap-2">
+      {/* 顶部区域 - 进度和按钮（小屏纵向：进度单行置顶；按钮缩小并排；大屏仍为左-中-右） */}
+      <div className="flex flex-col gap-1.5 pt-2 px-2 sm:flex-row sm:items-center sm:justify-between sm:gap-2 sm:px-4">
+        {/* 左侧按钮组：小屏在进度下方 */}
+        <div className="order-2 flex flex-wrap items-center justify-center gap-1.5 sm:order-1 sm:justify-start sm:gap-2">
           {/* 音频开关 */}
           <button
             onClick={() => setAudioEnabled(!audioEnabled)}
-            className={`px-2 py-1 rounded text-xl shadow transition-colors ${audioEnabled
+            className={`rounded px-1.5 py-0.5 text-xs shadow transition-colors sm:px-2 sm:py-1 sm:text-xl ${audioEnabled
               ? 'bg-green-500 hover:bg-green-600 text-white'
               : 'bg-gray-400 hover:bg-gray-500 text-white'
               }`}
@@ -586,7 +586,7 @@ export default function Home() {
           {/* 反转模式开关 */}
           <button
             onClick={() => setReverseMode(!reverseMode)}
-            className={`px-2 py-1 rounded text-xl shadow transition-colors ${reverseMode
+            className={`rounded px-1.5 py-0.5 text-xs shadow transition-colors sm:px-2 sm:py-1 sm:text-xl ${reverseMode
               ? 'bg-orange-500 hover:bg-orange-600 text-white'
               : 'bg-gray-400 hover:bg-gray-500 text-white'
               }`}
@@ -608,29 +608,26 @@ export default function Home() {
                 }
               }
             }}
-            className="bg-teal-500 hover:bg-teal-600 text-white px-2 py-1 rounded text-xl shadow transition-colors"
+            className="rounded bg-teal-500 px-1.5 py-0.5 text-xs text-white shadow transition-colors hover:bg-teal-600 sm:px-2 sm:py-1 sm:text-xl"
             title="设置备份间隔"
           >
             💾{backupInterval}
           </button>
         </div>
 
-        {/* 中间进度区域 */}
-        <div className="text-center text-3xl font-bold text-gray-700">
+        {/* 中间进度：小屏置顶一行展示；大屏仍为三列 justify-between */}
+        <div className="order-1 w-full min-w-0 text-center text-sm font-bold tabular-nums leading-snug text-gray-700 sm:order-2 sm:w-auto sm:text-2xl md:text-3xl sm:leading-normal">
           {wordsData.length > 0 ? (
             <>
               {`${currentIndex + 1}/${wordsData.length} 错(${wordsData.slice(0, currentIndex + 1).filter(w => !w.isLearned).length}/${wordsData.filter(w => !w.isLearned).length})`}
             </>
-          ) : '0/0'}
-        </div>
-
-        {/* 右侧按钮组 */}
-        <div className="flex gap-2">
-          {wordsData.length > 0 && currentWord && (
-            <>
-            </>
+          ) : (
+            '0/0'
           )}
         </div>
+
+        {/* 右侧占位（与原版一致，便于中间进度在宽屏上分布；小屏隐藏） */}
+        <div className="hidden gap-2 sm:order-3 sm:flex" aria-hidden />
       </div>
 
       {/* 表格区域 */}
