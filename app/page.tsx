@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { GIFT_PROMO_LINE } from '../config/gift-promo';
 
 interface WordData {
   word: string;
@@ -779,8 +780,23 @@ export default function Home() {
         )}
       </div>
 
+      {/* 底部背景区说明（走马灯） */}
+      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-0 overflow-hidden border-t border-gray-200/70 bg-gray-100/85 py-1.5 backdrop-blur-sm sm:py-2">
+        <div className="promo-marquee-track">
+          <span className="inline-flex shrink-0 items-center whitespace-nowrap px-6 text-[11px] leading-snug text-gray-600 sm:px-10 sm:text-sm">
+            {GIFT_PROMO_LINE}
+          </span>
+          <span
+            className="inline-flex shrink-0 items-center whitespace-nowrap px-6 text-[11px] leading-snug text-gray-600 sm:px-10 sm:text-sm"
+            aria-hidden
+          >
+            {GIFT_PROMO_LINE}
+          </span>
+        </div>
+      </div>
+
       {/* 右下角按钮组 */}
-      <div className="fixed bottom-4 right-4 flex gap-2">
+      <div className="fixed bottom-20 right-4 z-[1] flex gap-2 sm:bottom-24">
         <button
           onClick={() => fileInputRef.current?.click()}
           className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm shadow transition-colors"
@@ -803,7 +819,7 @@ export default function Home() {
 
       {lastCommitHint ? (
         <div
-          className="fixed bottom-1 left-1 z-0 max-w-[min(100vw-1rem,20rem)] truncate text-[10px] leading-tight text-gray-400 opacity-60 pointer-events-none select-none"
+          className="fixed bottom-1 left-1 z-[1] max-w-[min(100vw-1rem,20rem)] truncate text-[10px] leading-tight text-gray-400 opacity-60 pointer-events-none select-none"
           title={`当前版本最后提交：${lastCommitHint}`}
         >
           {lastCommitHint}
