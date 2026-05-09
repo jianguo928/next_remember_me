@@ -630,13 +630,13 @@ export default function Home() {
       </div>
 
       {/* 顶部区域 - 进度和按钮（小屏纵向：进度单行置顶；按钮缩小并排；大屏仍为左-中-右） */}
-      <div className="flex flex-col gap-1.5 pt-2 px-2 sm:flex-row sm:items-center sm:justify-between sm:gap-2 sm:px-4">
+      <div className="flex flex-col gap-2 pt-2 px-3 sm:flex-row sm:items-center sm:justify-between sm:gap-2 sm:px-4">
         {/* 左侧按钮组：小屏在进度下方 */}
-        <div className="order-2 flex flex-wrap items-center justify-center gap-1.5 sm:order-1 sm:justify-start sm:gap-2">
+        <div className="order-2 flex flex-wrap items-center justify-center gap-2 sm:order-1 sm:justify-start sm:gap-2">
           {/* 音频开关 */}
           <button
             onClick={() => setAudioEnabled(!audioEnabled)}
-            className={`rounded px-1.5 py-0.5 text-xs shadow transition-colors sm:px-2 sm:py-1 sm:text-xl ${audioEnabled
+            className={`rounded px-2.5 py-1 text-sm shadow transition-colors sm:px-2 sm:py-1 sm:text-xl ${audioEnabled
               ? 'bg-green-500 hover:bg-green-600 text-white'
               : 'bg-gray-400 hover:bg-gray-500 text-white'
               }`}
@@ -648,7 +648,7 @@ export default function Home() {
           {/* 反转模式开关 */}
           <button
             onClick={() => setReverseMode(!reverseMode)}
-            className={`rounded px-1.5 py-0.5 text-xs shadow transition-colors sm:px-2 sm:py-1 sm:text-xl ${reverseMode
+            className={`rounded px-2.5 py-1 text-sm shadow transition-colors sm:px-2 sm:py-1 sm:text-xl ${reverseMode
               ? 'bg-orange-500 hover:bg-orange-600 text-white'
               : 'bg-gray-400 hover:bg-gray-500 text-white'
               }`}
@@ -670,7 +670,7 @@ export default function Home() {
                 }
               }
             }}
-            className="rounded bg-teal-500 px-1.5 py-0.5 text-xs text-white shadow transition-colors hover:bg-teal-600 sm:px-2 sm:py-1 sm:text-xl"
+            className="rounded bg-teal-500 px-2.5 py-1 text-sm text-white shadow transition-colors hover:bg-teal-600 sm:px-2 sm:py-1 sm:text-xl"
             title="设置备份间隔"
           >
             💾{backupInterval}
@@ -678,7 +678,7 @@ export default function Home() {
         </div>
 
         {/* 中间进度：小屏置顶一行展示；大屏仍为三列 justify-between */}
-        <div className="order-1 w-full min-w-0 text-center text-sm font-bold tabular-nums leading-snug text-gray-700 sm:order-2 sm:w-auto sm:text-2xl md:text-3xl sm:leading-normal">
+        <div className="order-1 w-full min-w-0 text-center text-base font-bold tabular-nums leading-snug text-gray-700 sm:order-2 sm:w-auto sm:text-2xl md:text-3xl sm:leading-normal">
           {wordsData.length > 0 ? (
             <>
               {`${currentIndex + 1}/${wordsData.length} 错(${wordsData.slice(0, currentIndex + 1).filter(w => !w.isLearned).length}/${wordsData.filter(w => !w.isLearned).length})`}
@@ -693,25 +693,25 @@ export default function Home() {
       </div>
 
       {/* 倒计时：显示含秒；仅可调时/分 + 开始/暂停/停止 */}
-      <div className="border-b border-gray-100 px-2 pb-2 sm:px-4">
+      <div className="border-b border-gray-100 px-3 pb-2 sm:px-4">
         <div className="mx-auto flex max-w-4xl flex-col gap-2">
           {/* 第一行：倒计时文字 + 时间 */}
           <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
-            <span className="text-xs text-gray-500 sm:text-sm">倒计时</span>
+            <span className="text-sm text-gray-500">倒计时</span>
             <span
-              className="font-mono text-xl font-bold tabular-nums tracking-tight text-gray-800 sm:text-2xl"
+              className="font-mono text-2xl font-bold tabular-nums tracking-tight text-gray-800"
               aria-live="polite"
             >
               {formatCountdownHMS(countdownRemainSec)}
             </span>
           </div>
           {/* 第二行：开始 / 暂停 / 停止 */}
-          <div className="flex flex-wrap justify-center gap-1">
+          <div className="flex flex-wrap justify-center gap-1.5">
             <button
               type="button"
               onClick={startCountdown}
               disabled={countdownRemainSec <= 0 || countdownStatus === 'running'}
-              className="rounded bg-emerald-500 px-2 py-0.5 text-xs font-medium text-white shadow hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-40 sm:py-1 sm:text-sm"
+              className="rounded bg-emerald-500 px-2.5 py-1 text-sm font-medium text-white shadow hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-40 sm:py-1 sm:text-sm"
             >
               开始
             </button>
@@ -719,7 +719,7 @@ export default function Home() {
               type="button"
               onClick={pauseCountdown}
               disabled={countdownStatus !== 'running'}
-              className="rounded bg-amber-500 px-2 py-0.5 text-xs font-medium text-white shadow hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-40 sm:py-1 sm:text-sm"
+              className="rounded bg-amber-500 px-2.5 py-1 text-sm font-medium text-white shadow hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-40 sm:py-1 sm:text-sm"
             >
               暂停
             </button>
@@ -729,25 +729,25 @@ export default function Home() {
               disabled={
                 countdownStatus === 'idle' && countdownRemainSec === countdownPresetSec
               }
-              className="rounded bg-slate-500 px-2 py-0.5 text-xs font-medium text-white shadow hover:bg-slate-600 disabled:cursor-not-allowed disabled:opacity-40 sm:py-1 sm:text-sm"
+              className="rounded bg-slate-500 px-2.5 py-1 text-sm font-medium text-white shadow hover:bg-slate-600 disabled:cursor-not-allowed disabled:opacity-40 sm:py-1 sm:text-sm"
             >
               停止
             </button>
           </div>
-          <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-1 text-xs sm:gap-x-16 sm:text-sm">
+          <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-1 text-sm sm:gap-x-16 sm:text-sm">
             {(
               [
                 { label: '时', deltaNeg: -3600, deltaPos: 3600 },
                 { label: '分', deltaNeg: -60, deltaPos: 60 },
               ] as const
             ).map(({ label, deltaNeg, deltaPos }) => (
-              <div key={label} className="flex items-center gap-0.5 sm:gap-1">
-                <span className="w-4 shrink-0 text-center text-gray-600 sm:w-5">{label}</span>
+              <div key={label} className="flex items-center gap-1 sm:gap-1">
+                <span className="w-5 shrink-0 text-center text-gray-600 sm:w-5">{label}</span>
                 <button
                   type="button"
                   onClick={() => adjustCountdown(deltaNeg)}
                   disabled={countdownStatus === 'running'}
-                  className="min-w-[1.75rem] rounded bg-gray-200 px-1 py-0.5 font-medium text-gray-800 hover:bg-gray-300 disabled:cursor-not-allowed disabled:opacity-40 sm:min-w-[2rem] sm:px-2"
+                  className="min-w-[2rem] rounded bg-gray-200 px-1.5 py-1 text-sm font-medium text-gray-800 hover:bg-gray-300 disabled:cursor-not-allowed disabled:opacity-40 sm:min-w-[2rem] sm:px-2 sm:text-base"
                   aria-label={`${label}减`}
                 >
                   −
@@ -756,7 +756,7 @@ export default function Home() {
                   type="button"
                   onClick={() => adjustCountdown(deltaPos)}
                   disabled={countdownStatus === 'running'}
-                  className="min-w-[1.75rem] rounded bg-gray-200 px-1 py-0.5 font-medium text-gray-800 hover:bg-gray-300 disabled:cursor-not-allowed disabled:opacity-40 sm:min-w-[2rem] sm:px-2"
+                  className="min-w-[2rem] rounded bg-gray-200 px-1.5 py-1 text-sm font-medium text-gray-800 hover:bg-gray-300 disabled:cursor-not-allowed disabled:opacity-40 sm:min-w-[2rem] sm:px-2 sm:text-base"
                   aria-label={`${label}加`}
                 >
                   +
