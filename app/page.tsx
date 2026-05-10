@@ -768,7 +768,7 @@ export default function Home() {
       </div>
 
       {/* 底部背景区说明（走马灯） */}
-      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-0 overflow-hidden border-t border-gray-200/70 bg-gray-100/85 py-1.5 backdrop-blur-sm sm:py-2">
+      <div className="pointer-events-none fixed inset-x-0 bottom-[30px] z-0 overflow-hidden border-t border-gray-200/70 bg-gray-100/85 py-1.5 backdrop-blur-sm sm:py-2">
         <div className="promo-marquee-track">
           <span className="inline-flex shrink-0 items-center whitespace-nowrap px-6 text-[11px] leading-snug text-gray-600 sm:px-10 sm:text-sm">
             {GIFT_PROMO_LINE}
