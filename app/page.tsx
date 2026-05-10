@@ -445,7 +445,7 @@ export default function Home() {
         <table className="w-full max-w-[calc(100vw-2rem)] sm:max-w-3xl border-2 border-gray-300 bg-white rounded">
           <tbody>
             <tr>
-              <td className="w-full px-6 sm:px-20 py-10 text-center border border-gray-300 text-6xl sm:text-9xl font-bold break-words">
+              <td className="w-full px-6 sm:px-20 py-10 text-center border border-gray-300 text-4xl sm:text-9xl font-bold break-words">
                 {currentWord.word}
               </td>
             </tr>
