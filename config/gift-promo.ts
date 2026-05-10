@@ -2,4 +2,4 @@
  * 底部走马灯文案：修改此处即可，无需编辑页面组件。
  */
 export const GIFT_PROMO_LINE =
-  '每送99钻礼物，为主播增加10分钟学习时间';
+  'stay hard';
