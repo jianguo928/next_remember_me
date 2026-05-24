@@ -622,14 +622,23 @@ export default function Home() {
 
       {/* 顶部区域：小屏进度置顶，其下三按钮均分铺满一行；大屏左按钮组 / 中进度 / 右占位 */}
       <div className="flex flex-col gap-2 pt-2 px-3 sm:flex-row sm:items-center sm:justify-between sm:gap-2 sm:px-4">
-        <div className="order-1 w-full min-w-0 text-center text-base font-bold tabular-nums leading-snug text-gray-700 sm:order-2 sm:w-auto sm:text-2xl md:text-3xl sm:leading-normal">
-          {wordsData.length > 0 ? (
-            <>
-              {`${currentIndex + 1}/${wordsData.length} 错(${wordsData.slice(0, currentIndex + 1).filter(w => !w.isLearned).length}/${wordsData.filter(w => !w.isLearned).length})`}
-            </>
-          ) : (
-            '0/0'
-          )}
+        <div className="order-1 flex w-full min-w-0 flex-wrap items-center justify-center gap-x-3 gap-y-0.5 text-center sm:order-2 sm:w-auto sm:gap-x-4">
+          <span className="text-base font-bold tabular-nums leading-snug text-gray-700 sm:text-2xl md:text-3xl sm:leading-normal">
+            {wordsData.length > 0 ? (
+              `${currentIndex + 1}/${wordsData.length} 错(${wordsData.slice(0, currentIndex + 1).filter(w => !w.isLearned).length}/${wordsData.filter(w => !w.isLearned).length})`
+            ) : (
+              '0/0'
+            )}
+          </span>
+          <span className="inline-flex items-baseline gap-1.5 sm:gap-2">
+            <span className="text-xs text-gray-500 sm:text-sm">正计时</span>
+            <span
+              className="font-mono text-lg font-bold tabular-nums tracking-tight text-gray-800 sm:text-2xl"
+              aria-live="polite"
+            >
+              {formatElapsedHMS(elapsedSec)}
+            </span>
+          </span>
         </div>
 
         <div className="order-2 flex w-full min-w-0 flex-nowrap gap-2 sm:order-1 sm:w-auto sm:flex-wrap sm:justify-start">
@@ -680,18 +689,9 @@ export default function Home() {
         <div className="hidden gap-2 sm:order-3 sm:flex" aria-hidden />
       </div>
 
-      {/* 正计时：显示含秒；控制区单行：开始/暂停/停止 + 时± + 分±（非运行时可调初始读数） */}
+      {/* 正计时控制：开始/暂停/停止 + 时± + 分±（非运行时可调初始读数） */}
       <div className="border-b border-gray-100 px-3 pb-2 sm:px-4">
-        <div className="mx-auto flex max-w-4xl flex-col gap-2">
-          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
-            <span className="text-sm text-gray-500">正计时</span>
-            <span
-              className="font-mono text-2xl font-bold tabular-nums tracking-tight text-gray-800"
-              aria-live="polite"
-            >
-              {formatElapsedHMS(elapsedSec)}
-            </span>
-          </div>
+        <div className="mx-auto flex max-w-4xl flex-col">
           <div className="flex w-full min-w-0 flex-nowrap items-stretch gap-1 sm:items-center sm:gap-2">
             <button
               type="button"
