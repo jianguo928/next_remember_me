@@ -112,6 +112,15 @@ export default function Home() {
     };
   }, []);
 
+  // 第8字段（association3）通常为纯数字或「未找到」；其他内容表示有错题笔记（仅前端展示用）
+  const hasWrongAnswerNote = (association3?: string): boolean => {
+    const value = (association3 ?? '').trim();
+    if (!value) return false;
+    if (value === '未找到') return false;
+    if (/^\d+$/.test(value)) return false;
+    return true;
+  };
+
   const parseFileContent = (content: string): WordData[] => {
     const lines = content.trim().split('\n');
     return lines.map(line => {
@@ -446,7 +455,7 @@ export default function Home() {
           <tbody>
             <tr>
               <td className="w-full px-6 sm:px-20 py-10 text-center border border-gray-300 text-4xl sm:text-9xl font-bold break-words">
-                {currentWord.word}
+                {hasWrongAnswerNote(currentWord.association3) ? '*' : ''}{currentWord.word}
               </td>
             </tr>
           </tbody>
